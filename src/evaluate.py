@@ -18,7 +18,7 @@ from utilities.configuration import Configuration
 from utilities.data import AMASSBatch, LMDBDataset
 from utilities.data_transforms import ToTensor
 from utilities.fk import SMPLForwardKinematics
-from models.models import create_model
+from models import create_model
 from utilities.visualize import Visualizer
 
 

@@ -95,6 +95,7 @@ class Configuration(object):
         )
 
         # Learning configurations.
+        parser.add_argument("--model", default="DummyModel", help="Model file name.")
         parser.add_argument("--lr", type=float, default=0.001, help="Learning rate.")
         parser.add_argument("--n_epochs", type=int, default=50, help="Number of epochs.")
         parser.add_argument(

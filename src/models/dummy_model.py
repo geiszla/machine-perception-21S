@@ -1,56 +1,12 @@
 """
-Neural networks for motion prediction.
-
-Copyright ETH Zurich, Manuel Kaufmann
+Dummy Model 
 """
 
 import torch.nn as nn
+from .base_model import BaseModel
 
 from utilities.data import AMASSBatch
 from utilities.losses import mse
-
-
-def create_model(config):
-    """
-    Choose model to create.
-
-    This is a helper function that can be useful if you have several model definitions that
-    you want to choose from via the command line. For now, we just return the Dummy model.
-    """
-    return DummyModel(config)
-
-
-class BaseModel(nn.Module):
-    """
-    A base class for neural networks.
-
-    A base class for neural networks that defines an interface and implements a few common
-    functions.
-    """
-
-    def __init__(self, config):
-        super(BaseModel, self).__init__()
-        self.config = config
-        self.pose_size = config.pose_size
-        self.create_model()
-
-    # noinspection PyAttributeOutsideInit
-    def create_model(self):
-        """Create the model, called automatically by the initializer."""
-        raise NotImplementedError("Must be implemented by subclass.")
-
-    def forward(self, batch: AMASSBatch):
-        """Forward pass."""
-        raise NotImplementedError("Must be implemented by subclass.")
-
-    def backward(self, batch: AMASSBatch, model_out):
-        """Backward pass."""
-        raise NotImplementedError("Must be implemented by subclass.")
-
-    def model_name(self):
-        """Print summary string of this model. Override this if desired."""
-        return "{}-lr{}".format(self.__class__.__name__, self.config.lr)
-
 
 class DummyModel(BaseModel):
     """

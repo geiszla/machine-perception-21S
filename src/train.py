@@ -22,7 +22,7 @@ from utilities.configuration import Configuration
 from utilities.data import AMASSBatch, LMDBDataset
 from utilities.data_transforms import ExtractWindow, ToTensor
 from evaluate import evaluate_test
-from models.models import create_model
+from models import create_model
 from utilities.motion_metrics import MetricsEngine
 
 
