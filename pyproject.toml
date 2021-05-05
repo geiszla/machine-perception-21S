@@ -1,0 +1,38 @@
+[tool.poetry]
+name = "appliedscience"
+version = "1.0.0"
+description = "Repository for project of Machine Perception (263-3710-00L) offered in Spring 2021"
+
+license = "Copyright (c) 2021 AIT Lab, ETH Zurich, Manuel Kaufmann"
+authors = ["András Geiszl", "Tommaso Macrì", "Vincent Jung"]
+
+readme = "README.md"
+repository = "https://gitlab.inf.ethz.ch/COURSE-MP2021/Appliedscience"
+homepage = "https://gitlab.inf.ethz.ch/COURSE-MP2021/Appliedscience"
+
+[tool.poetry.dependencies]
+python = "~3.7.4"
+lmdb = "^1.2.1"
+matplotlib = "^3.4.1"
+numba = "^0.53.1"
+numpy = "^1.20.2"
+numpy-quaternion = "^2021.4.5"
+opencv-python = "^4.5.1"
+pandas = "^1.2.4"
+scipy = "^1.6.3"
+tensorboardX = "^2.2"
+# torch = "1.6.0"
+# torchvision = "0.7.0"
+# cudatoolkit = "10.1"
+
+[tool.poetry.dev-dependencies]
+black = "^21.4b2"
+flake8 = "^3.9.1"
+isort = "^5.8.0"
+mypy = "^0.812"
+pre-commit = "^2.12.1"
+pydocstyle = "^6.0.0"
+pylint = "^2.8.2"
+
+[tool.black]
+line-length = 100
