@@ -1,10 +1,9 @@
-"""
-Base Model class, which all models will inherit from
-"""
+"""Base Model class, which all models will inherit from."""
+
 import torch.nn as nn
 
 from utilities.data import AMASSBatch
-from utilities.losses import mse
+
 
 class BaseModel(nn.Module):
     """

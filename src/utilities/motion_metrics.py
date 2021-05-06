@@ -9,7 +9,13 @@ import cv2
 import numpy as np
 import torch
 
-from utilities.fk import SMPL_MAJOR_JOINTS, SMPL_NR_JOINTS, SMPL_PARENTS, local_rot_to_global, sparse_to_full
+from utilities.fk import (
+    SMPL_MAJOR_JOINTS,
+    SMPL_NR_JOINTS,
+    SMPL_PARENTS,
+    local_rot_to_global,
+    sparse_to_full,
+)
 
 
 def eye(n, batch_shape):

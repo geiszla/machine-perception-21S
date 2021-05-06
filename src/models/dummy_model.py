@@ -1,12 +1,11 @@
-"""
-Dummy Model 
-"""
+"""Dummy Model."""
 
 import torch.nn as nn
-from .base_model import BaseModel
 
+from models.base_model import BaseModel
 from utilities.data import AMASSBatch
 from utilities.losses import mse
+
 
 class DummyModel(BaseModel):
     """

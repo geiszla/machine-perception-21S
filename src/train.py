@@ -17,12 +17,12 @@ from torch.utils.data import DataLoader
 from torchvision.transforms import transforms
 
 import utilities.utils as U
+from evaluate import evaluate_test
+from models import create_model
 from utilities.configuration import CONSTANTS as C
 from utilities.configuration import Configuration
 from utilities.data import AMASSBatch, LMDBDataset
 from utilities.data_transforms import ExtractWindow, ToTensor
-from evaluate import evaluate_test
-from models import create_model
 from utilities.motion_metrics import MetricsEngine
 
 

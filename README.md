@@ -7,7 +7,7 @@ Project Link: https://machine-perception.ait.ethz.ch/project4/
 2. Project code structure
 3. Development workspace and configuration
 
-# Create new models
+### Create new models
 To create a new model, create a new python script in the "models" folder. This script has to define a class which inherits from the 'BaseModel' class found in base_model.py. You can then select to run train.py with this newly defined model using the tag '--model' followed by the name of the class. If no model arguments are given, the DummyModel will be selected by default.
 The create_model function in the models module will go through all the classes in all the scripts in the "models" folder, so you could technically define two different model classes in one script if necessary.
 
@@ -15,7 +15,7 @@ The create_model function in the models module will go through all the classes i
 5. Formatting
 
 ## How to run locally [TODO]
-# Using conda
+### Using conda
 Create a virtual environment in conda : 
 
 ```

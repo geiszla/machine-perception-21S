@@ -13,12 +13,12 @@ from torch.utils.data import DataLoader
 from torchvision.transforms import transforms
 
 import utilities.utils as U
+from models import create_model
 from utilities.configuration import CONSTANTS as C
 from utilities.configuration import Configuration
 from utilities.data import AMASSBatch, LMDBDataset
 from utilities.data_transforms import ToTensor
 from utilities.fk import SMPLForwardKinematics
-from models import create_model
 from utilities.visualize import Visualizer
 
 
