@@ -19,7 +19,7 @@ from utilities.configuration import Configuration
 from utilities.data import AMASSBatch, LMDBDataset
 from utilities.data_transforms import ToTensor
 from utilities.fk import SMPLForwardKinematics
-from utilities.visualize import Visualizer
+from visualize import Visualizer
 
 
 def _export_results(eval_result, output_file):

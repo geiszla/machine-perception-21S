@@ -233,7 +233,7 @@ def visualize_positions(
         fig_text.set_text(time_passed)
 
     # create the animation object, for animation to work reference to this object must be kept
-    animation.FuncAnimation(
+    anim = animation.FuncAnimation(
         fig,
         update_frame,
         seq_length,
@@ -248,9 +248,9 @@ def visualize_positions(
 if __name__ == "__main__":
     import os
 
-    from configuration import CONSTANTS as C
-    from data import LMDBDataset
-    from fk import SMPLForwardKinematics
+    from utilities.configuration import CONSTANTS as C
+    from utilities.data import LMDBDataset
+    from utilities.fk import SMPLForwardKinematics
 
     valid_data = LMDBDataset(os.path.join(C.DATA_DIR, "validation"), transform=None)
     visualizer = Visualizer(SMPLForwardKinematics())
