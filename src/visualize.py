@@ -240,7 +240,8 @@ def visualize_positions(
         fargs=(pos, all_lines, parents, colors + [colors[0]]),
         interval=1000 / fps,
     )
-
+    anim.pause()
+    anim.resume()
     plt.show()
     plt.close()
 
