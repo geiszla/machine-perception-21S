@@ -1,23 +1,29 @@
 """LSTM Model."""
 
-import torch.nn as nn
 import torch
+import torch.nn as nn
+
 from models.base_model import BaseModel
 from utilities.data import AMASSBatch
 from utilities.losses import mse
 
+
 class DenseLayer(nn.Module):
-    """A fully connected layer with ReLU and BatchNorm"""
-    def __init__(self,in_features, out_features):
+    """A fully connected layer with ReLU and BatchNorm."""
+
+    def __init__(self, in_features, out_features):
         super(DenseLayer, self).__init__()
-        self.fcn = nn.Linear(in_features,out_features)
+        self.fcn = nn.Linear(in_features, out_features)
         self.relu = nn.ReLU()
         self.bn = nn.BatchNorm1d(out_features)
-    def forward(self,x):
+
+    def forward(self, x):
+        """Forward step."""
         x = self.fcn(x)
         x = self.relu(x)
         # x = self.bn(x)
         return x
+
 
 class LSTMModel(BaseModel):
     """LSTM model."""
@@ -28,11 +34,14 @@ class LSTMModel(BaseModel):
 
     # noinspection PyAttributeOutsideInit
     def create_model(self):
-        """"Create the model."""
-        self.LSTM = nn.LSTM(input_size = 135,
-                            hidden_size = 135,
-                            batch_first = True,
-                            dropout = 0)
+        """Create the model."""
+        self.n_hidden = 135
+        self.LSTM = nn.LSTM(
+            input_size=135, hidden_size=self.n_hidden, num_layers=2, batch_first=True, dropout=0
+        )
+
+        self.dense = nn.Linear(in_features=self.n_hidden, out_features=135)
+
     def forward(self, batch: AMASSBatch):
         """
         Forward pass.
@@ -48,15 +57,16 @@ class LSTMModel(BaseModel):
         pred = []
         for i in range(self.config.target_seq_len):
             # print(model_in.shape)
-            out_LSTM = self.LSTM(model_in)[0][:,-1,:]
+            out_LSTM = self.LSTM(model_in)[0][:, -1, :]
             # print(out_LSTM.shape)
+            out_LSTM = self.dense(out_LSTM)
             pred.append(out_LSTM.squeeze())
-            model_in = torch.roll(model_in,-1,1)
-            model_in[:,-1] = out_LSTM.squeeze()
-        
-        pred = torch.cat(pred)
+            model_in = torch.roll(model_in, -1, 1)
+            model_in[:, -1] = out_LSTM.squeeze()
+
+        pred_tensor = torch.cat(pred)
         # print(pred.shape)
-        model_out["predictions"] = pred.reshape(batch_size, self.config.target_seq_len, -1)
+        model_out["predictions"] = pred_tensor.reshape(batch_size, self.config.target_seq_len, -1)
         # print(model_out["predictions"].shape)
         return model_out
 
