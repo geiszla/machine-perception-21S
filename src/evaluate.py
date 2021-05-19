@@ -61,7 +61,10 @@ def load_model_weights(checkpoint_file, net, state_key="model_state_dict"):
     """Load a pre-trained model."""
     if not os.path.exists(checkpoint_file):
         raise ValueError("Could not find model checkpoint {}.".format(checkpoint_file))
-    checkpoint = torch.load(checkpoint_file)
+    if torch.cuda.is_available():
+        checkpoint = torch.load(checkpoint_file)
+    else:
+        checkpoint = torch.load(checkpoint_file,map_location = torch.device('cpu'))
     ckpt = checkpoint[state_key]
     net.load_state_dict(ckpt)
 
