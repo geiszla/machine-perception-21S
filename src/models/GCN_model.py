@@ -122,7 +122,7 @@ class GCNModel(BaseModel):
         p_dropout = 0.5
         node_n = 135
         self.num_stage = 12
-        self.dct_n = 100
+        self.dct_n = 70
 
         self.idx_input = np.concatenate((np.arange(120),np.repeat(119,24)))
         dct_matrices = get_dct_matrix(input_feature)
@@ -169,16 +169,17 @@ class GCNModel(BaseModel):
         y = y + x
         y = y.transpose(2,1)
         y = torch.matmul(self.idct_matrix[:,:self.dct_n],y)
-        model_out["predictions"] = y[:,-self.config.target_seq_len:]
+        model_out["predictions"] = y[:,self.config.seed_seq_len:]
         # print("pred shape")
         # print(model_out["predictions"].shape)
+        # print(y.shape)
         model_out["full_pred"] = y
         return model_out
     
     def backward(self, batch: AMASSBatch, model_out):
 
         predictions = model_out["predictions"]
-        targets = batch.poses[:,-self.config.target_seq_len:]
+        targets = batch.poses[:,self.config.seed_seq_len:]
 
         total_loss = l1_loss(predictions, targets)
 
@@ -191,4 +192,4 @@ class GCNModel(BaseModel):
             # be called when evaluating the model on the validation set.
             total_loss.backward()
 
-        return loss_vals, targets[:,self.config.seed_seq_len:]
+        return loss_vals, targets
