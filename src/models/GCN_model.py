@@ -74,10 +74,10 @@ class GC_Block(nn.Module):
         self.out_features = in_features
 
         self.gc1 = GraphConvolution(in_features, in_features, node_n=node_n, bias=bias)
-        self.bn1 = nn.BatchNorm1d(node_n * in_features).cuda()
-
         self.gc2 = GraphConvolution(in_features, in_features, node_n=node_n, bias=bias)
-        self.bn2 = nn.BatchNorm1d(node_n * in_features).cuda()
+
+        self.bn1 = nn.BatchNorm1d(node_n * in_features)
+        self.bn2 = nn.BatchNorm1d(node_n * in_features)
 
         self.do = nn.Dropout(p_dropout)
         self.act_f = nn.Tanh()
@@ -103,10 +103,10 @@ class GC_Block(nn.Module):
                + str(self.out_features) + ')'
 
 
-class GCN(BaseModel):
+class GCNModel(BaseModel):
 
     def __init__(self,config):
-        super(GCN, self).__init__(config)
+        super(GCNModel, self).__init__(config)
 
     def create_model(self):
         """
@@ -122,14 +122,20 @@ class GCN(BaseModel):
         p_dropout = 0.5
         node_n = 135
         self.num_stage = 12
-        self.dct_n = 35
+        self.dct_n = 100
 
         self.idx_input = np.concatenate((np.arange(120),np.repeat(119,24)))
         dct_matrices = get_dct_matrix(input_feature)
-        self.dct_matrix = torch.from_numpy(dct_matrices[0]).type(torch.float32).cuda()
-        self.idct_matrix = torch.from_numpy(dct_matrices[1]).type(torch.float32).cuda()
+
+        if torch.cuda.is_available():
+            self.dct_matrix = torch.from_numpy(dct_matrices[0]).type(torch.float32).cuda()
+            self.idct_matrix = torch.from_numpy(dct_matrices[1]).type(torch.float32).cuda()
+        else:
+            self.dct_matrix = torch.from_numpy(dct_matrices[0]).type(torch.float32)
+            self.idct_matrix = torch.from_numpy(dct_matrices[1]).type(torch.float32)
+
         self.gc1 = GraphConvolution(self.dct_n, hidden_feature, node_n=node_n)
-        self.bn1 = nn.BatchNorm1d(node_n * hidden_feature).cuda()
+        self.bn1 = nn.BatchNorm1d(node_n * hidden_feature)
 
         self.gcbs = []
         for i in range(self.num_stage):
@@ -144,7 +150,7 @@ class GCN(BaseModel):
 
     def forward(self, batch: AMASSBatch):
         model_out = {"seed": batch.poses[:, : self.config.seed_seq_len], "predictions": None}
-        model_in = Variable(batch.poses[:,self.idx_input].cuda()).float()
+        model_in = batch.poses[:,self.idx_input]
 
         #Getting DCT coefficients of input
         x = torch.matmul(self.dct_matrix[:self.dct_n,:],model_in).transpose(2,1)
@@ -163,7 +169,7 @@ class GCN(BaseModel):
         y = y + x
         y = y.transpose(2,1)
         y = torch.matmul(self.idct_matrix[:,:self.dct_n],y)
-        model_out["predictions"] = y[:,:self.config.target_seq_len]
+        model_out["predictions"] = y[:,-self.config.target_seq_len:]
         # print("pred shape")
         # print(model_out["predictions"].shape)
         model_out["full_pred"] = y
@@ -171,8 +177,8 @@ class GCN(BaseModel):
     
     def backward(self, batch: AMASSBatch, model_out):
 
-        predictions = model_out["full_pred"]
-        targets = batch.poses
+        predictions = model_out["predictions"]
+        targets = batch.poses[:,-self.config.target_seq_len:]
 
         total_loss = l1_loss(predictions, targets)
 
