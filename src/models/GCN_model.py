@@ -4,6 +4,7 @@ import torch.nn as nn
 import torch
 import numpy as np
 from torch.nn.parameter import Parameter
+from torch.autograd import Variable
 import math
 
 from models.base_model import BaseModel
@@ -48,8 +49,8 @@ class GraphConvolution(nn.Module):
             self.bias.data.uniform_(-stdv, stdv)
 
     def forward(self, input):
-        print(input.shape)
-        print(self.weight.shape)
+        # print(input.shape)
+        # print(self.weight.shape)
         support = torch.matmul(input, self.weight)
         output = torch.matmul(self.att, support)
         if self.bias is not None:
@@ -73,10 +74,10 @@ class GC_Block(nn.Module):
         self.out_features = in_features
 
         self.gc1 = GraphConvolution(in_features, in_features, node_n=node_n, bias=bias)
-        self.bn1 = nn.BatchNorm1d(node_n * in_features)
+        self.bn1 = nn.BatchNorm1d(node_n * in_features).cuda()
 
         self.gc2 = GraphConvolution(in_features, in_features, node_n=node_n, bias=bias)
-        self.bn2 = nn.BatchNorm1d(node_n * in_features)
+        self.bn2 = nn.BatchNorm1d(node_n * in_features).cuda()
 
         self.do = nn.Dropout(p_dropout)
         self.act_f = nn.Tanh()
@@ -120,15 +121,15 @@ class GCN(BaseModel):
         hidden_feature = 256
         p_dropout = 0.5
         node_n = 135
-        self.num_stage = 1
+        self.num_stage = 12
         self.dct_n = 35
 
         self.idx_input = np.concatenate((np.arange(120),np.repeat(119,24)))
         dct_matrices = get_dct_matrix(input_feature)
-        self.dct_matrix = torch.from_numpy(dct_matrices[0]).type(torch.float32)
-        self.idct_matrix = torch.from_numpy(dct_matrices[1]).type(torch.float32)
+        self.dct_matrix = torch.from_numpy(dct_matrices[0]).type(torch.float32).cuda()
+        self.idct_matrix = torch.from_numpy(dct_matrices[1]).type(torch.float32).cuda()
         self.gc1 = GraphConvolution(self.dct_n, hidden_feature, node_n=node_n)
-        self.bn1 = nn.BatchNorm1d(node_n * hidden_feature)
+        self.bn1 = nn.BatchNorm1d(node_n * hidden_feature).cuda()
 
         self.gcbs = []
         for i in range(self.num_stage):
@@ -143,13 +144,14 @@ class GCN(BaseModel):
 
     def forward(self, batch: AMASSBatch):
         model_out = {"seed": batch.poses[:, : self.config.seed_seq_len], "predictions": None}
-        model_in = batch.poses[:,self.idx_input]
-        #Getting DCT coefficients of input
+        model_in = Variable(batch.poses[:,self.idx_input].cuda()).float()
 
+        #Getting DCT coefficients of input
         x = torch.matmul(self.dct_matrix[:self.dct_n,:],model_in).transpose(2,1)
-        print(x.shape)
+        # print(x.shape)
         y = self.gc1(x)
         b, n, f = y.shape
+
         y = self.bn1(y.view(b, -1)).view(b, n, f)
         y = self.act_f(y)
         y = self.do(y)
@@ -162,8 +164,8 @@ class GCN(BaseModel):
         y = y.transpose(2,1)
         y = torch.matmul(self.idct_matrix[:,:self.dct_n],y)
         model_out["predictions"] = y[:,:self.config.target_seq_len]
-        print("pred shape")
-        print(model_out["predictions"].shape)
+        # print("pred shape")
+        # print(model_out["predictions"].shape)
         model_out["full_pred"] = y
         return model_out
     

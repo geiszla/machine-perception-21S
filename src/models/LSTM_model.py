@@ -29,13 +29,13 @@ class LSTMModel(BaseModel):
     """LSTM model."""
 
     def __init__(self, config):
-        self.n_history = 120
+        self.n_history = 15
         super(LSTMModel, self).__init__(config)
 
     # noinspection PyAttributeOutsideInit
     def create_model(self):
         """Create the model."""
-        self.n_hidden = 135
+        self.n_hidden = 512
         self.LSTM = nn.LSTM(
             input_size=135, hidden_size=self.n_hidden, num_layers=2, batch_first=True, dropout=0
         )
