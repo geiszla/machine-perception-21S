@@ -105,6 +105,13 @@ class Configuration(object):
             "--bs_eval", type=int, default=16, help="Batch size for valid/test set."
         )
 
+        # Model parameters.
+
+        # GCN.
+        parser.add_argument("--gcn_dct_n", type=int, default=70, help="GCN number of DCT coef.")
+        parser.add_argument("--gcn_h", type=int, default=256, help="GCN hidden size.")
+        parser.add_argument("--gcn_p_dropout", type=float, default=0.5, help="GCN dropout prob.")
+
         config = parser.parse_args()
         return Configuration(vars(config))
 

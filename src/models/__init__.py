@@ -19,7 +19,6 @@ scripts = [
 
 def create_model(config):
     """Return an instance of the model class with the same name as config.model."""
-    print(scripts)
     for script in scripts:
         for classes in inspect.getmembers(importlib.import_module(script), inspect.isclass):
             if classes[0] == config.model:
