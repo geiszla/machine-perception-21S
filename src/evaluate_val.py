@@ -84,7 +84,11 @@ def evaluate_train(model_id, viz=False):
     with torch.no_grad():
         for abatch in valid_loader:
             # Move data to GPU.
-            batch_gpu = abatch.to_gpu()
+            if torch.cuda.is_available():
+                batch_gpu = abatch.to_gpu()
+            else:
+                batch_gpu = abatch
+
 
             # Get the predictions.
             model_out = net(batch_gpu)
