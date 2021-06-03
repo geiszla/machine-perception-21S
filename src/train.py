@@ -113,14 +113,17 @@ def main(config):
     valid_loader = DataLoader(
         valid_data,
         batch_size=config.bs_eval,
-        shuffle=False,
+        shuffle=config.train_on_val,
         num_workers=config.data_workers,
         collate_fn=AMASSBatch.from_sample_list,
     )
 
+    if config.train_on_val:
+        torch.utils.data.ConcatDataset([train_loader,valid_loader])
+
     # Load some data statistics, but they are not used further.
     # You may use these stats if you want, but you can also compute them yourself.
-    np.load(os.path.join(C.DATA_DIR, "training", "stats.npz"), allow_pickle=True)["stats"].tolist()
+    print(np.load(os.path.join(C.DATA_DIR, "training", "stats.npz"), allow_pickle=True)["stats"].tolist())
 
     # Set the pose size in the config as models use this later.
     setattr(config, "pose_size", 135)
@@ -199,7 +202,7 @@ def main(config):
                 me.compute_and_aggregate(model_out["predictions"], targets)
                 me.to_tensorboard_log(me.get_final_metrics(), writer, global_step, "train")
 
-            if global_step % (config.eval_every - 1) == 0:
+            if (global_step % (config.eval_every - 1) == 0) & (not config.train_on_val):
                 # Evaluate on validation.
                 start = time.time()
                 net.eval()

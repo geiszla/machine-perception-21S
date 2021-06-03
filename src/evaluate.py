@@ -92,6 +92,60 @@ def load_model(model_id):
 
     return net, model_config, model_dir
 
+def evaluate_val(model_id, viz=False):
+    """
+    Load a model, evaluate it on the test set and save the predictions into the model directory.
+
+    :param model_id: The ID of the model to load.
+    :param viz: If some samples should be visualized.
+    """
+    net, model_config, model_dir = load_model(model_id)
+
+    # No need to extract windows for the test set, since it only contains the seed sequence anyway.
+    valid_transform = transforms.Compose([ToTensor()])
+    valid_data = LMDBDataset(os.path.join(C.DATA_DIR, "validation"), transform=valid_transform)
+    valid_loader = DataLoader(
+        valid_data,
+        batch_size=model_config.bs_eval,
+        shuffle=False,
+        num_workers=model_config.data_workers,
+        collate_fn=AMASSBatch.from_sample_list,
+    )
+
+    # Put the model in evaluation mode.
+    net.eval()
+    results = dict()
+    with torch.no_grad():
+        for abatch in valid_loader:
+            # Move data to GPU.
+            if torch.cuda.is_available():
+                batch_gpu = abatch.to_gpu()
+            else:
+                batch_gpu = abatch
+
+
+            # Get the predictions.
+            model_out = net(batch_gpu)
+
+            for b in range(abatch.batch_size):
+                results[batch_gpu.seq_ids[b]] = (
+                    model_out["predictions"][b].detach().cpu().numpy(),
+                    model_out["seed"][b].detach().cpu().numpy(),
+                    abatch.poses[b].detach().cpu().numpy()[model_config.seed_seq_len :],
+                )
+
+    if viz:
+        fk_engine = SMPLForwardKinematics()
+        visualizer = Visualizer(fk_engine)
+        n_samples_viz = 10
+        rng = np.random.RandomState(42)
+        idxs = rng.randint(0, len(results), size=n_samples_viz)
+        sample_keys = [list(sorted(results.keys()))[i] for i in idxs]
+        for k in sample_keys:
+            visualizer.visualize_with_gt(
+                results[k][1], results[k][0], results[k][2], title="Sample ID: {}".format(k)
+            )
+
 
 def evaluate_test(model_id, viz=False):
     """
@@ -152,5 +206,9 @@ def evaluate_test(model_id, viz=False):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_id", required=True, help="Which model to evaluate.")
+    parser.add_argument("--eval_on_val", required=False, help="Which model to evaluate.")
     config = parser.parse_args()
-    evaluate_test(config.model_id, viz=True)
+    if config.eval_on_val:
+        evaluate_val(config.model_id, viz=True)
+    else:
+        evaluate_test(config.model_id, viz=True)

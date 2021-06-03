@@ -104,6 +104,8 @@ class Configuration(object):
         parser.add_argument(
             "--bs_eval", type=int, default=16, help="Batch size for valid/test set."
         )
+        parser.add_argument("--train_on_val", type=bool, default=False, help="Train on both train and val set.")
+        parser.add_argument("--eval_on_val", type=bool, default=False, help="Evaluate on validation set")
 
         # Model parameters.
 
