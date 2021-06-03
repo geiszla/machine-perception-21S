@@ -137,3 +137,4 @@ pip-selfcheck.json
 !.vscode/settings.json.default
 data/
 logs/
+experiments/
