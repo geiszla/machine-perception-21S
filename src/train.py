@@ -157,7 +157,7 @@ def main(config):
     writer = SummaryWriter(os.path.join(model_dir, "logs"))
 
     # Define the optimizer.
-    optimizer = optim.Adam(net.parameters(), lr=config.lr,weight_decay= 0.01)
+    optimizer = optim.AdamW(net.parameters(), lr=config.lr)
 
     # Training loop.
     global_step = 0
