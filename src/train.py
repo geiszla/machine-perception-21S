@@ -123,7 +123,7 @@ def main(config):
 
     # Load some data statistics, but they are not used further.
     # You may use these stats if you want, but you can also compute them yourself.
-    print(np.load(os.path.join(C.DATA_DIR, "training", "stats.npz"), allow_pickle=True)["stats"].tolist())
+    np.load(os.path.join(C.DATA_DIR, "training", "stats.npz"), allow_pickle=True)["stats"].tolist()
 
     # Set the pose size in the config as models use this later.
     setattr(config, "pose_size", 135)
