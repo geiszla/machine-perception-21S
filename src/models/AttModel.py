@@ -1,4 +1,4 @@
-from models import GCN4Attn
+from models import GCN4attn
 import numpy as np
 
 import numpy as np
@@ -37,7 +37,7 @@ class AttModel(BaseModel):
                                              bias=False),
                                    nn.ReLU())
 
-        self.gcn = GCN4Attn.GCN4Attn(input_feature=(dct_n) * 2, hidden_feature=d_model, p_dropout=0.5,
+        self.gcn = GCN4attn.GCN(input_feature=(dct_n) * 2, hidden_feature=d_model, p_dropout=0.5,
                            num_stage=num_stage,
                            node_n=in_features,
                            config=self.config)

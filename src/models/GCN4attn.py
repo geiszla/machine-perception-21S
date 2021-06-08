@@ -89,7 +89,7 @@ class GC_Block(nn.Module):
                + str(self.out_features) + ')'
 
 
-class GCN4Attn(BaseModel):
+class GCN(BaseModel):
     def __init__(self, config, input_feature, hidden_feature, p_dropout, num_stage=1, node_n=48):
         """
         :param input_feature: num of input feature
@@ -98,7 +98,7 @@ class GCN4Attn(BaseModel):
         :param num_stage: number of residual blocks
         :param node_n: number of nodes in graph
         """
-        super(GCN4Attn, self).__init__(config)
+        super(GCN, self).__init__(config)
         self.num_stage = num_stage
 
         self.gc1 = GraphConvolution(input_feature, hidden_feature, node_n=node_n)
