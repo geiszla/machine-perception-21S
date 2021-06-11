@@ -30,12 +30,12 @@ class AttModel(BaseModel):
                                              bias=False),
                                    nn.ReLU())
 
-        self.convK = nn.Sequential(nn.Conv1d(in_channels=in_features, out_channels=d_model, kernel_size=6,
-                                             bias=False),
-                                   nn.ReLU(),
-                                   nn.Conv1d(in_channels=d_model, out_channels=d_model, kernel_size=5,
-                                             bias=False),
-                                   nn.ReLU())
+        # self.convK = nn.Sequential(nn.Conv1d(in_channels=in_features, out_channels=d_model, kernel_size=6,
+        #                                      bias=False),
+        #                            nn.ReLU(),
+        #                            nn.Conv1d(in_channels=d_model, out_channels=d_model, kernel_size=5,
+        #                                      bias=False),
+        #                            nn.ReLU())
 
         self.gcn = GCN4attn.GCN(input_feature=(dct_n) * 2, hidden_feature=d_model, p_dropout=0.5,
                            num_stage=num_stage,
@@ -91,7 +91,7 @@ class AttModel(BaseModel):
         idx = list(range(-self.kernel_size, 0, 1)) + [-1] * output_n
         outputs = []
 
-        key_tmp = self.convK(src_key_tmp / 1000.0)
+        key_tmp = self.convQ(src_key_tmp / 1000.0)
         # print('key_tmp:'+str(key_tmp.shape))
         query_tmp = self.convQ(src_query_tmp / 1000.0)
         # print('query_tmp:'+str(query_tmp.shape))
