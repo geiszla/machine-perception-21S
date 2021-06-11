@@ -15,7 +15,7 @@ class AttModel(BaseModel):
     def __init__(self,config):
         super(AttModel, self).__init__(config)
 
-    def create_model(self, in_features=135, kernel_size=10, d_model=512, num_stage=2, dct_n=34):
+    def create_model(self, in_features=135, kernel_size=10, d_model=512, num_stage=12, dct_n=34):
         self.kernel_size = kernel_size
         self.d_model = d_model
         # self.seq_in = seq_in
@@ -92,7 +92,7 @@ class AttModel(BaseModel):
         outputs = []
 
         key_tmp = self.convK(src_key_tmp / 1000.0)
-        print('key_tmp:'+str(key_tmp.shape))
+        # print('key_tmp:'+str(key_tmp.shape))
         query_tmp = self.convQ(src_query_tmp / 1000.0)
         # print('query_tmp:'+str(query_tmp.shape))
         score_tmp = torch.matmul(query_tmp.transpose(1, 2), key_tmp) + 1e-15

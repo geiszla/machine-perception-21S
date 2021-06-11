@@ -161,6 +161,8 @@ def main(config):
 
     # Define the optimizer.
     optimizer = optim.AdamW(net.parameters(), lr=config.lr)
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=100, gamma=0.5, last_epoch=-1)
+
 
     # Training loop.
     global_step = 0
@@ -238,7 +240,7 @@ def main(config):
                             "epoch": epoch,
                             "global_step": global_step,
                             "model_state_dict": net.state_dict(),
-                            "optimizer_state_dict": optimizer.state_dict(),
+                            "optimizer_state_dict": scheduler.state_dict(),
                             "train_loss": train_losses["total_loss"],
                             "valid_loss": valid_losses["total_loss"],
                         },
@@ -249,6 +251,7 @@ def main(config):
                 net.train()
 
             global_step += 1
+        scheduler.step()
 
     # After the training, evaluate the model on the test and generate the result file that can be
     # uploaded to the submission system. The submission file will be stored in the model directory.
