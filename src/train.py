@@ -22,7 +22,7 @@ from models import create_model
 from utilities.configuration import CONSTANTS as C
 from utilities.configuration import Configuration
 from utilities.data import AMASSBatch, LMDBDataset
-from utilities.data_transforms import ExtractWindow, ToTensor
+from utilities.data_transforms import ExtractWindow, ToTensor, DataAugmentation
 from utilities.motion_metrics import MetricsEngine
 
 
@@ -91,7 +91,7 @@ def main(config):
     rng_extractor = np.random.RandomState(4313)
     window_size = config.seed_seq_len + config.target_seq_len
     train_transform = transforms.Compose(
-        [ExtractWindow(window_size, rng_extractor, mode="random"), ToTensor()]
+        [ExtractWindow(window_size, rng_extractor, mode="random"), ToTensor(), DataAugmentation()]
     )
     # Validation data is already in the correct length, so no need to extract windows.
     valid_transform = transforms.Compose([ToTensor()])
