@@ -55,7 +55,6 @@ class ExtractWindow(object):
 class DataAugmentation(object):
     """Data augmentation class"""
     def __call__(self, sample):
-        print(sample.poses.shape)
         if torch.rand(1).item() > 0.5:
             poses=sample.poses.flip(0)
         else:
