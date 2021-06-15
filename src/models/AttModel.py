@@ -82,25 +82,27 @@ class AttModel(BaseModel):
               np.expand_dims(np.arange(vn), axis=1)
         
         src_key_tmp = src_tmp[:,idx_keys].clone().reshape([bs*vn,kl,-1]).transpose(1,2)
-        print("src_key_tmp :"+str(src_key_tmp.shape))
+        # print("src_key_tmp :"+str(src_key_tmp.shape))
 
         idx = list(range(-self.kernel_size, 0, 1)) + [-1] * output_n
         outputs = []
 
         key_tmp = self.GCEncoder(src_key_tmp)
-        key_tmp = key_tmp.reshape([bs,vn,135,-1])
-        print('key_tmp:'+str(key_tmp.shape))
-        query_tmp = self.GCEncoder(src_query_tmp).unsqueeze(dim=1)
-        print('query_tmp:'+str(query_tmp.shape))
+        decoded_key_tmp = self.GCDecoder(key_tmp)
+        key_tmp = key_tmp.reshape([bs,vn,135,-1]).detach()
+        # print('key_tmp:'+str(key_tmp.shape))
+        query_tmp = self.GCEncoder(src_query_tmp)
+        decoded_query_tmp = self.GCDecoder(query_tmp)
+        query_tmp = query_tmp.unsqueeze(dim=1).detach()
+        # print('query_tmp:'+str(query_tmp.shape))
         
         score_tmp = torch.matmul(key_tmp, query_tmp.transpose(2,3)).diagonal(dim1=-2,dim2=-1) + 1e-15
-        print("score tmp"+str(score_tmp.shape))
-        print(key_tmp.norm(p=2,dim=-1).shape)
-        print(query_tmp.norm(p=2,dim=-1).shape)
+        # print('score tmp'+str(score_tmp.shape))
+        # print(key_tmp.norm(p=2,dim=-1).shape)
+        # print(query_tmp.norm(p=2,dim=-1).shape)
         norms = torch.mul(key_tmp.norm(p=2,dim=-1),query_tmp.norm(p=2,dim=-1))
         att_tmp = torch.div(score_tmp,norms).mean(dim=-1)
-        att_tmp = torch.div(att_tmp,att_tmp.mean(dim=-1))
-
+        att_tmp = torch.div(att_tmp,att_tmp.mean(dim=-1).unsqueeze(dim=1)).unsqueeze(dim=1)
         dct_att_tmp = torch.matmul(att_tmp, src_value_tmp)[:, 0].reshape(
             [bs, -1, dct_n])
 
@@ -115,7 +117,9 @@ class AttModel(BaseModel):
         outputs = torch.cat(outputs, dim=2)
         # print(outputs.shape)
         model_out["predictions"] = outputs[:,-self.config.target_seq_len:]
-
+        model_out['loss_AE'] = (decoded_key_tmp - src_key_tmp).reshape([bs,vn,135,-1]).sum(dim=-1).sum(dim=-1).mean(dim=1).mean(dim=0) +\
+        (decoded_query_tmp - src_query_tmp).squeeze().sum(dim=-1).sum(dim=-1).mean(dim=0)
+        # print(model_out['loss_AE'].shape)
         return model_out
 
     def backward(self, batch: AMASSBatch, model_out):
@@ -124,6 +128,7 @@ class AttModel(BaseModel):
         targets = batch.poses[:, self.config.seed_seq_len :]
 
         total_loss = l1_loss(predictions, targets)
+        # print(total_loss.shape)
 
         # If you have more than just one loss, just add them to this dict and they will
         # automatically be logged.
@@ -133,5 +138,6 @@ class AttModel(BaseModel):
             # We only want to do backpropagation in training mode, as this function might also
             # be called when evaluating the model on the validation set.
             total_loss.backward()
+            model_out['loss_AE'].backward()
 
         return loss_vals, targets
