@@ -102,7 +102,7 @@ class AttModel(BaseModel):
         # print(query_tmp.norm(p=2,dim=-1).shape)
         norms = torch.mul(key_tmp.norm(p=2,dim=-1),query_tmp.norm(p=2,dim=-1))
         att_tmp = torch.div(score_tmp,norms).mean(dim=-1)
-        att_tmp = torch.div(att_tmp,att_tmp.mean(dim=-1).unsqueeze(dim=1)).unsqueeze(dim=1)
+        att_tmp = torch.div(att_tmp,att_tmp.sum(dim=-1).unsqueeze(dim=1)).unsqueeze(dim=1)
         dct_att_tmp = torch.matmul(att_tmp, src_value_tmp)[:, 0].reshape(
             [bs, -1, dct_n])
 
