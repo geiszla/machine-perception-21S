@@ -10,10 +10,10 @@ from utilities.data import AMASSBatch
 from utilities.losses import l1_loss
 from utilities.utils import get_dct_matrix
 
-class AttModel(BaseModel):
+class ConvAttModel(BaseModel):
 
     def __init__(self,config):
-        super(AttModel, self).__init__(config)
+        super(ConvAttModel, self).__init__(config)
 
     def create_model(self, in_features=135, kernel_size=10, d_model=512, num_stage=12, dct_n=34):
         self.kernel_size = kernel_size
