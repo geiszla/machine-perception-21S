@@ -106,11 +106,11 @@ class Configuration(object):
         )
         parser.add_argument("--train_on_val", type=bool, default=False, help="Train on both train and val set.")
         parser.add_argument("--eval_on_val", type=bool, default=False, help="Evaluate on validation set")
-
+        parser.add_argument("--divide_lr_every", type=int, default=200, help="Divide learning rate every x epochs")
         # Model parameters.
 
         # GCN.
-        parser.add_argument("--gcn_dct_n", type=int, default=70, help="GCN number of DCT coef.")
+        parser.add_argument("--gcn_dct_n", type=int, default=100, help="GCN number of DCT coef.")
         parser.add_argument("--gcn_h", type=int, default=256, help="GCN hidden size.")
         parser.add_argument("--gcn_p_dropout", type=float, default=0.5, help="GCN dropout prob.")
 
