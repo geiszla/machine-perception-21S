@@ -8,6 +8,7 @@ import glob
 import os
 import sys
 import time
+import random
 
 import numpy as np
 import torch
@@ -84,6 +85,9 @@ def main(config):
     # Fix seed.
     if config.seed is None:
         config.seed = int(time.time())
+    torch.manual_seed(config.seed)
+    random.seed(config.seed)
+    np.random.seed(config.seed)
 
     # Define some transforms that are applied to each `AMASSSample` before they are collected
     # into a batch.
@@ -91,7 +95,7 @@ def main(config):
     rng_extractor = np.random.RandomState(4313)
     window_size = config.seed_seq_len + config.target_seq_len
     train_transform = transforms.Compose(
-        [ExtractWindow(window_size, rng_extractor, mode="random"), ToTensor(), DataAugmentation()]
+        [ExtractWindow(window_size, rng_extractor, mode="random"), ToTensor()]
     )
     # Validation data is already in the correct length, so no need to extract windows.
     valid_transform = transforms.Compose([ToTensor()])
@@ -161,14 +165,17 @@ def main(config):
 
     # Define the optimizer.
     optimizer = optim.AdamW(net.parameters(), lr=config.lr)
-    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=100, gamma=0.5, last_epoch=-1)
-
 
     # Training loop.
     global_step = 0
     best_valid_loss = float("inf")
     for epoch in range(config.n_epochs):
-
+        
+        if ((epoch%100==0) and (epoch != 0)):
+            config.lr = config.lr/2
+            for g in optimizer.param_groups:
+                g['lr'] = config.lr
+        
         for i, abatch in enumerate(train_loader):
             start = time.time()
             optimizer.zero_grad()
@@ -240,7 +247,7 @@ def main(config):
                             "epoch": epoch,
                             "global_step": global_step,
                             "model_state_dict": net.state_dict(),
-                            "optimizer_state_dict": scheduler.state_dict(),
+                            "optimizer_state_dict": optimizer.state_dict(),
                             "train_loss": train_losses["total_loss"],
                             "valid_loss": valid_losses["total_loss"],
                         },
@@ -251,7 +258,6 @@ def main(config):
                 net.train()
 
             global_step += 1
-        scheduler.step()
 
     # After the training, evaluate the model on the test and generate the result file that can be
     # uploaded to the submission system. The submission file will be stored in the model directory.

@@ -23,8 +23,8 @@ class AttModel(BaseModel):
         # ks = int((kernel_size + 1) / 2)
         assert kernel_size == 10
 
-        self.GCEncoder = GCN4attn.GraphConvolution(in_features=kernel_size,out_features=d_model,node_n=in_features)
-        self.GCDecoder = GCN4attn.GraphConvolution(in_features=d_model,out_features=kernel_size,node_n=in_features)
+        self.GCEncoder = GCN4attn.GraphConvolution(in_features=kernel_size,out_features=5,node_n=in_features)
+        self.GCDecoder = GCN4attn.GraphConvolution(in_features=5,out_features=kernel_size,node_n=in_features)
 
         self.gcn = GCN4attn.GCN(input_feature=(dct_n) * 2, hidden_feature=d_model, p_dropout=0.5,
                            num_stage=num_stage,
@@ -117,8 +117,8 @@ class AttModel(BaseModel):
         outputs = torch.cat(outputs, dim=2)
         # print(outputs.shape)
         model_out["predictions"] = outputs[:,-self.config.target_seq_len:]
-        model_out['loss_AE'] = (decoded_key_tmp - src_key_tmp).reshape([bs,vn,135,-1]).sum(dim=-1).sum(dim=-1).mean(dim=1).mean(dim=0) +\
-        (decoded_query_tmp - src_query_tmp).squeeze().sum(dim=-1).sum(dim=-1).mean(dim=0)
+        model_out["loss_AE"] = (decoded_key_tmp - src_key_tmp).pow(2).reshape([bs,vn,135,-1]).sum(dim=-1).sum(dim=-1).mean(dim=1).mean(dim=0) +\
+        (decoded_query_tmp - src_query_tmp).pow(2).squeeze().sum(dim=-1).sum(dim=-1).mean(dim=0)
         # print(model_out['loss_AE'].shape)
         return model_out
 
@@ -132,7 +132,7 @@ class AttModel(BaseModel):
 
         # If you have more than just one loss, just add them to this dict and they will
         # automatically be logged.
-        loss_vals = {"total_loss": total_loss.cpu().item()}
+        loss_vals = {"total_loss": total_loss.cpu().item(), "AE_loss":model_out["loss_AE"].cpu().item()}
 
         if self.training:
             # We only want to do backpropagation in training mode, as this function might also
