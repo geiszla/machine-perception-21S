@@ -17,14 +17,16 @@ class AttModel(BaseModel):
 
     def create_model(self, in_features=135, kernel_size=10, d_model=512, num_stage=12, dct_n=34):
         self.kernel_size = kernel_size
-        self.d_model = d_model
+        self.d_model = self.config.gcn_h
         # self.seq_in = seq_in
-        self.dct_n = dct_n
+        self.dct_n = self.config.gcn_dct_n
         # ks = int((kernel_size + 1) / 2)
         assert kernel_size == 10
 
-        self.GCEncoder = GCN4attn.GraphConvolution(in_features=kernel_size,out_features=5,node_n=in_features)
-        self.GCDecoder = GCN4attn.GraphConvolution(in_features=5,out_features=kernel_size,node_n=in_features)
+        self.GCEncoder = nn.Sequential(GCN4attn.GraphConvolution(in_features=kernel_size,out_features=7,node_n=in_features),
+                                    GCN4attn.GraphConvolution(in_features=7,out_features=5,node_n=in_features))
+        self.GCDecoder = nn.Sequential(GCN4attn.GraphConvolution(in_features=5,out_features=7,node_n=in_features),
+                                    GCN4attn.GraphConvolution(in_features=7,out_features=kernel_size,node_n=in_features))
 
         self.gcn = GCN4attn.GCN(input_feature=(dct_n) * 2, hidden_feature=d_model, p_dropout=0.5,
                            num_stage=num_stage,

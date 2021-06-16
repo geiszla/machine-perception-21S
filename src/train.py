@@ -171,7 +171,7 @@ def main(config):
     best_valid_loss = float("inf")
     for epoch in range(config.n_epochs):
         
-        if ((epoch%100==0) and (epoch != 0)):
+        if ((epoch%config.divide_lr_every==0) and (epoch != 0)):
             config.lr = config.lr/2
             for g in optimizer.param_groups:
                 g['lr'] = config.lr
