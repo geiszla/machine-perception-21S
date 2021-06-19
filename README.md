@@ -40,7 +40,7 @@ conda activate MP
 Install torch and torchvision :
 
 ```bash
-conda install torch=1.6.0 torchvision=0.7.0
+conda install pytorch=1.6.0 torchvision=0.7.0
 ```
 
 Then, install requirements. You might have to comment out torch and torchvision.
