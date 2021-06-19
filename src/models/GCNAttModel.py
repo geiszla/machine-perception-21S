@@ -15,13 +15,13 @@ class GCNAttModel(BaseModel):
     def __init__(self,config):
         super(GCNAttModel, self).__init__(config)
 
-    def create_model(self, in_features=135, kernel_size=10, d_model=512, num_stage=12, dct_n=34):
+    def create_model(self, in_features=135, kernel_size=17, d_model=256, num_stage=12, dct_n=34):
         self.kernel_size = kernel_size
-        self.d_model = self.config.gcn_h
+        self.d_model = d_model
         # self.seq_in = seq_in
-        self.dct_n = self.config.gcn_dct_n
+        self.dct_n = dct_n
         # ks = int((kernel_size + 1) / 2)
-        assert kernel_size == 10
+        # assert kernel_size == 10
 
         self.GCEncoder = nn.Sequential(GCN4attn.GraphConvolution(in_features=kernel_size,out_features=7,node_n=in_features),
                                     GCN4attn.GraphConvolution(in_features=7,out_features=5,node_n=in_features))

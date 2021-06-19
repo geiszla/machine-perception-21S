@@ -15,18 +15,18 @@ class ConvAttModel(BaseModel):
     def __init__(self,config):
         super(ConvAttModel, self).__init__(config)
 
-    def create_model(self, in_features=135, kernel_size=10, d_model=512, num_stage=12, dct_n=34):
+    def create_model(self, in_features=135, kernel_size=17, d_model=256, num_stage=12, dct_n=34):
         self.kernel_size = kernel_size
         self.d_model = d_model
         # self.seq_in = seq_in
         self.dct_n = dct_n
         # ks = int((kernel_size + 1) / 2)
-        assert kernel_size == 10
+        # assert kernel_size == 10
 
-        self.convQ = nn.Sequential(nn.Conv1d(in_channels=in_features, out_channels=d_model, kernel_size=6,
+        self.convQ = nn.Sequential(nn.Conv1d(in_channels=in_features, out_channels=d_model, kernel_size=10,
                                              bias=False),
                                    nn.ReLU(),
-                                   nn.Conv1d(in_channels=d_model, out_channels=d_model, kernel_size=5,
+                                   nn.Conv1d(in_channels=d_model, out_channels=d_model, kernel_size=8,
                                              bias=False),
                                    nn.ReLU())
 
