@@ -82,7 +82,7 @@ The predictions on the test data are in a `.csv.gz` format which can be directly
 
 ### How to run on Leonhard
 
-#### Setting up the environment 
+#### Setting up the environment
 
 1. Connect to the Leonhard host (with your terminal or with VS Code) with
 
