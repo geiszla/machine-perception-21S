@@ -18,6 +18,12 @@ where [model] can be either:
 * `GCNAttModel` for the GCN model with encoder/decoder structure,
 * `GCNModel` for the GNC model.
 
+Evaluate:
+
+```bash
+python -u src/evaluate.py --model_id [model id]
+```
+
 ## Development workspace and configuration
 
 ### Create new models
