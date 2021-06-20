@@ -6,7 +6,9 @@ Copyright ETH Zurich, Manuel Kaufmann
 import glob
 import os
 import zipfile
+
 import numpy as np
+
 
 def create_model_dir(experiment_main_dir, experiment_id, model_summary):
     """
@@ -50,6 +52,7 @@ def export_code(file_list, output_file):
 def count_parameters(net):
     """Count number of trainable parameters in `net`."""
     return sum(p.numel() for p in net.parameters() if p.requires_grad)
+
 
 def get_dct_matrix(N):
     """Output n*n matrix of DCT (Discrete Cosinus Transform) coefficients."""

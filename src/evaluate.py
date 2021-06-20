@@ -64,7 +64,7 @@ def load_model_weights(checkpoint_file, net, state_key="model_state_dict"):
     if torch.cuda.is_available():
         checkpoint = torch.load(checkpoint_file)
     else:
-        checkpoint = torch.load(checkpoint_file,map_location = torch.device('cpu'))
+        checkpoint = torch.load(checkpoint_file, map_location=torch.device("cpu"))
     ckpt = checkpoint[state_key]
     net.load_state_dict(ckpt)
 
@@ -91,6 +91,7 @@ def load_model(model_id):
     print("Loaded weights from {}".format(checkpoint_file))
 
     return net, model_config, model_dir
+
 
 def evaluate_val(model_id, viz=False):
     """
@@ -122,7 +123,6 @@ def evaluate_val(model_id, viz=False):
                 batch_gpu = abatch.to_gpu()
             else:
                 batch_gpu = abatch
-
 
             # Get the predictions.
             model_out = net(batch_gpu)

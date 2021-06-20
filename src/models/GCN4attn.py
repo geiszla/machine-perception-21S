@@ -1,6 +1,8 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+"""
+GCN Human motion predictor for attention network.
 
+Same as GCNModel, except it does not calculate the DCT of the inputs.
+"""
 import math
 
 import torch
@@ -8,13 +10,14 @@ import torch.nn as nn
 from torch.nn.parameter import Parameter
 
 from models.base_model import BaseModel
-from utilities.data import AMASSBatch
-from utilities.losses import l1_loss
 
 
 class GraphConvolution(nn.Module):
     """
-    adapted from : https://github.com/tkipf/gcn/blob/92600c39797c2bfb61a508e52b88fb554df30177/gcn/layers.py#L132
+    One layer graph convolution.
+
+    adapted from:
+    https://github.com/tkipf/gcn/blob/92600c39797c2bfb61a508e52b88fb554df30177/gcn/layers.py#L132.
     """
 
     def __init__(self, in_features, out_features, bias=True, node_n=48):
@@ -26,17 +29,19 @@ class GraphConvolution(nn.Module):
         if bias:
             self.bias = Parameter(torch.FloatTensor(out_features))
         else:
-            self.register_parameter('bias', None)
+            self.register_parameter("bias", None)
         self.reset_parameters()
 
     def reset_parameters(self):
-        stdv = 1. / math.sqrt(self.weight.size(1))
+        """Reset network parameters."""
+        stdv = 1.0 / math.sqrt(self.weight.size(1))
         self.weight.data.uniform_(-stdv, stdv)
         self.att.data.uniform_(-stdv, stdv)
         if self.bias is not None:
             self.bias.data.uniform_(-stdv, stdv)
 
     def forward(self, input):
+        """Forward pass function."""
         support = torch.matmul(input, self.weight)
         output = torch.matmul(self.att, support)
         if self.bias is not None:
@@ -45,16 +50,22 @@ class GraphConvolution(nn.Module):
             return output
 
     def __repr__(self):
-        return self.__class__.__name__ + ' (' \
-               + str(self.in_features) + ' -> ' \
-               + str(self.out_features) + ')'
+        """Representation function."""
+        return (
+            self.__class__.__name__
+            + " ("
+            + str(self.in_features)
+            + " -> "
+            + str(self.out_features)
+            + ")"
+        )
 
 
 class GC_Block(nn.Module):
+    """Graph convolution block."""
+
     def __init__(self, in_features, p_dropout, bias=True, node_n=48):
-        """
-        Define a residual block of GCN
-        """
+        """Define a residual block of GCN."""
         super(GC_Block, self).__init__()
         self.in_features = in_features
         self.out_features = in_features
@@ -69,6 +80,7 @@ class GC_Block(nn.Module):
         self.act_f = nn.Tanh()
 
     def forward(self, x):
+        """Forward pass function."""
         y = self.gc1(x)
         b, n, f = y.shape
         y = self.bn1(y.view(b, -1)).view(b, n, f)
@@ -84,14 +96,24 @@ class GC_Block(nn.Module):
         return y + x
 
     def __repr__(self):
-        return self.__class__.__name__ + ' (' \
-               + str(self.in_features) + ' -> ' \
-               + str(self.out_features) + ')'
+        """Representation function."""
+        return (
+            self.__class__.__name__
+            + " ("
+            + str(self.in_features)
+            + " -> "
+            + str(self.out_features)
+            + ")"
+        )
 
 
 class GCN(BaseModel):
+    """GCN model."""
+
     def __init__(self, config, input_feature, hidden_feature, p_dropout, num_stage=1, node_n=48):
         """
+        Initialize function.
+
         :param input_feature: num of input feature
         :param hidden_feature: num of hidden feature
         :param p_dropout: drop out prob.
@@ -116,9 +138,11 @@ class GCN(BaseModel):
         self.act_f = nn.Tanh()
 
     def create_model(self):
+        """Create model function."""
         return
 
     def forward(self, x):
+        """Forward pass function."""
         y = self.gc1(x)
         b, n, f = y.shape
         y = self.bn1(y.view(b, -1)).view(b, n, f)

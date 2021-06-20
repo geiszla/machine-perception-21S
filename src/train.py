@@ -6,9 +6,9 @@ Copyright ETH Zurich, Manuel Kaufmann
 import collections
 import glob
 import os
+import random
 import sys
 import time
-import random
 
 import numpy as np
 import torch
@@ -23,7 +23,7 @@ from models import create_model
 from utilities.configuration import CONSTANTS as C
 from utilities.configuration import Configuration
 from utilities.data import AMASSBatch, LMDBDataset
-from utilities.data_transforms import ExtractWindow, ToTensor, DataAugmentation
+from utilities.data_transforms import ExtractWindow, ToTensor
 from utilities.motion_metrics import MetricsEngine
 
 
@@ -123,7 +123,7 @@ def main(config):
     )
 
     if config.train_on_val:
-        torch.utils.data.ConcatDataset([train_loader,valid_loader])
+        torch.utils.data.ConcatDataset([train_loader, valid_loader])
 
     # Load some data statistics, but they are not used further.
     # You may use these stats if you want, but you can also compute them yourself.
@@ -170,12 +170,12 @@ def main(config):
     global_step = 0
     best_valid_loss = float("inf")
     for epoch in range(config.n_epochs):
-        
-        if ((epoch%config.divide_lr_every==0) and (epoch != 0)):
-            config.lr = config.lr/2
+
+        if (epoch % config.divide_lr_every == 0) and (epoch != 0):
+            config.lr = config.lr / 2
             for g in optimizer.param_groups:
-                g['lr'] = config.lr
-        
+                g["lr"] = config.lr
+
         for i, abatch in enumerate(train_loader):
             start = time.time()
             optimizer.zero_grad()

@@ -12,6 +12,7 @@ from utilities.data import AMASSBatch
 from utilities.losses import l1_loss
 from utilities.utils import get_dct_matrix
 
+
 class GraphConvolution(nn.Module):
     """adapted from https://github.com/tkipf/gcn."""
 

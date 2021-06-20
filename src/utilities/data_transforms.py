@@ -3,8 +3,10 @@ Data transformations to be applied to samples or batches before feeding the data
 
 Copyright ETH Zurich, Manuel Kaufmann
 """
-from utilities.data import AMASSSample
 import torch
+
+from utilities.data import AMASSSample
+
 
 class ToTensor(object):
     """Convert numpy arrays inside samples to PyTorch tensors."""
@@ -53,10 +55,16 @@ class ExtractWindow(object):
 
 
 class DataAugmentation(object):
-    """Data augmentation class"""
+    """Data augmentation class."""
+
     def __call__(self, sample):
+        """
+        Call function.
+
+        sample: AMASSSample
+        """
         if torch.rand(1).item() > 0.5:
-            poses=sample.poses.flip(0)
+            poses = sample.poses.flip(0)
         else:
-            poses=sample.poses
-        return AMASSSample(sample.seq_id,poses)
+            poses = sample.poses
+        return AMASSSample(sample.seq_id, poses)

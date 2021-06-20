@@ -17,6 +17,7 @@ def mse(predictions, targets):
     loss_per_sample_and_seq = (diff * diff).sum(dim=-1)  # (N, F)
     return loss_per_sample_and_seq.mean()
 
+
 def l1_loss(predictions, targets):
     """
     Compute the L1-loss.
@@ -27,4 +28,3 @@ def l1_loss(predictions, targets):
     """
     diff = (predictions - targets).abs()
     return diff.sum(dim=-1).mean()
-
