@@ -10,10 +10,10 @@ Run:
 ```
 python -u src/train.py --model [model] --n_epochs 2000 --lr 0.0005 --seed 42 --divide_lr_every 400
 ```
-where model can be either:
-* ConvAttModel
-* GCNAttModel
-* GCNModel
+where [model] can be either:
+* ConvAttModel for the GCN with the convolutional 1d network, 
+* GCNAttModel for the GCN model with encoder/decoder structure,
+* GCNModel for the GNC model.
 
 ### 2. Development workspace and configuration
 
