@@ -18,6 +18,12 @@ where [model] can be either:
 * `GCNAttModel` for the GCN model with encoder/decoder structure,
 * `GCNModel` for the GCN model without an attention network.
 
+Evaluate:
+
+```bash
+python src/evaluate.py --model_id [model id]
+```
+
 ## Development workspace and configuration
 
 ### Create new models
@@ -76,7 +82,7 @@ The predictions on the test data are in a `.csv.gz` format which can be directly
 
 ### How to run on Leonhard
 
-#### Setting up the environment 
+#### Setting up the environment
 
 1. Connect to the Leonhard host (with your terminal or with VS Code) with
 
