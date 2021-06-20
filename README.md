@@ -14,9 +14,9 @@ python -u src/train.py --model [model] --n_epochs 2000 --lr 0.0005 --seed 42 --d
 
 where [model] can be either:
 
-* `ConvAttModel` for the GCN with the convolutional 1d network
+* `ConvAttModel` for the GCN with the convolutional 1d attention network
 * `GCNAttModel` for the GCN model with encoder/decoder structure,
-* `GCNModel` for the GNC model.
+* `GCNModel` for the GCN model without an attention network.
 
 ## Development workspace and configuration
 
@@ -76,6 +76,8 @@ The predictions on the test data are in a `.csv.gz` format which can be directly
 
 ### How to run on Leonhard
 
+#### Setting up the environment 
+
 1. Connect to the Leonhard host (with your terminal or with VS Code) with
 
    ```bash
@@ -118,7 +120,7 @@ The predictions on the test data are in a `.csv.gz` format which can be directly
    export MP_EXPERIMENTS="$HOME/Appliedscience/experiments"
    ```
 
-### Running the script on leonhard
+#### Running the script on leonhard
 
 Go to the folder where your `train.py` file is located. You can run the following command:
 
