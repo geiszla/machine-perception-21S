@@ -2,8 +2,6 @@
 
 Project Link: https://machine-perception.ait.ethz.ch/project4/
 
-## Introduction
-
 ## How to reproduce the results
 
 cd to the root folder and
