@@ -5,7 +5,8 @@ Project Link: https://machine-perception.ait.ethz.ch/project4/
 ## Introduction
 
 ### 1. How to reproduce the results:
-cd to the root folder
+cd to the root folder and
+
 Run:
 ```
 python -u src/train.py --model [model] --n_epochs 2000 --lr 0.0005 --seed 42 --divide_lr_every 400
