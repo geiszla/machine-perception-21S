@@ -21,7 +21,7 @@ where [model] can be either:
 Evaluate:
 
 ```bash
-python -u src/evaluate.py --model_id [model id]
+python src/evaluate.py --model_id [model id]
 ```
 
 ## Development workspace and configuration
